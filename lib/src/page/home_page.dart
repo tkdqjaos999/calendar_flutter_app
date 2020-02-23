@@ -219,16 +219,31 @@ class _HomePageState extends State<HomePage> {
     }
     return InkWell(
       onTap: () {
-        if (sp.getDate(index) == null) {
-          showSettingDialog(context, Date(month: month, day: day));
-        } else {
-          showEditingDialog(context, sp.getDate(index));
+        var date = sp.getDate(index)?? Date(month: month, day: day);
+        date.feeling == null ? sp.setFeeling('very good') : sp.setFeeling(date.feeling);
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    DetailPage(date: date)));
+      },
+      onLongPress: () async {
+        if(sp.getDate(index)!=null) {
+          var result = await showDialog(context: context,
+            barrierDismissible: false,
+            child: AlertDialog(
+              content: Text('정말로 삭제 하시겠습니까?'),
+              actions: <Widget>[
+                FlatButton(onPressed: (){Navigator.pop(context, '삭제');}, child: Text('삭제')),
+                FlatButton(onPressed: (){Navigator.pop(context);}, child: Text('취소')),
+              ],
+            )
+          );
+          if(result == '삭제') {
+            sp.deleteDate(sp.getDate(index));
+            sp.setDate(index, null);
+          }
         }
-//        Navigator.push(
-//            context,
-//            MaterialPageRoute(
-//                builder: (context) =>
-//                    DetailPage(date: Date(month: month, day: day))));
       },
       child: Container(
         decoration: BoxDecoration(

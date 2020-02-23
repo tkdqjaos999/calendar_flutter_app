@@ -10,6 +10,7 @@ Logger logger = Logger();
 class SqlfliteProvider with ChangeNotifier {
   List<Date> dateList = List<Date>(372);
   Database dateDB;
+  String currentFeeling = '';
 
   SqlfliteProvider() {
     logger.d('init SqlfliteProvider');
@@ -31,6 +32,15 @@ class SqlfliteProvider with ChangeNotifier {
 
   void resetDateList() {
     dateList = List<Date>(372);
+  }
+
+  void setFeeling(String feeling) {
+    currentFeeling = feeling;
+    notifyListeners();
+  }
+
+  String getFeeling() {
+    return currentFeeling;
   }
 
   Future<void> _loadDatabase() async {

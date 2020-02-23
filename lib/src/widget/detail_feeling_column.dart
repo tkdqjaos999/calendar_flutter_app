@@ -1,30 +1,29 @@
 import 'package:calendar_flutter_app/src/data/data.dart';
+import 'package:calendar_flutter_app/src/data/sqflite_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class FeelingColumn extends StatefulWidget {
-  String feeling;
-
-  FeelingColumn({Key key, this.feeling}) : super(key: key);
-
   @override
   _FeelingColumnState createState() => _FeelingColumnState();
 }
 
 class _FeelingColumnState extends State<FeelingColumn> {
+  SqlfliteProvider sp;
   bool isSelect = false;
   bool animating = true;
-  var selectedFeeling;
   var tabHeight = 50.0;
   List<String> unselectedFeeling;
 
   @override
   void initState() {
-    selectedFeeling = widget.feeling??'very good';
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    sp = Provider.of<SqlfliteProvider>(context);
+
     return Padding(
       padding: const EdgeInsets.only(top: 15, left: 30, right: 30, bottom: 15),
       child: AnimatedContainer(
@@ -58,13 +57,11 @@ class _FeelingColumnState extends State<FeelingColumn> {
               Container(
                 height: 20,
                 width: 20,
-                color: widget.feeling == null
-                    ? Colors.redAccent
-                    : feelColors[selectedFeeling],
+                color: feelColors[sp.getFeeling()],
               ),
               SizedBox(width: 20,),
               Text(
-                selectedFeeling,
+                sp.getFeeling(),
                 style: TextStyle(fontSize: 20),
               )
             ],
@@ -95,9 +92,7 @@ class _FeelingColumnState extends State<FeelingColumn> {
         return InkWell(
           onTap: () async {
             if(animating){
-              setState(() {
-                selectedFeeling = feeling;
-              });
+              sp.setFeeling(feeling);
               await animateSync();
             }
           },
@@ -135,12 +130,12 @@ class _FeelingColumnState extends State<FeelingColumn> {
       });
     } else {
       setState(() {
-        tabHeight = 200.0;
+        tabHeight = 210.0;
       });
       await Future.delayed(Duration(milliseconds: 220));
       setState(() {
         unselectedFeeling = List.from(feeling);
-        unselectedFeeling.remove(selectedFeeling);
+        unselectedFeeling.remove(sp.getFeeling());
         isSelect = true;
       });
     }
