@@ -26,26 +26,23 @@ class _FeelingColumnState extends State<FeelingColumn> {
 
     return Padding(
       padding: const EdgeInsets.only(top: 15, left: 30, right: 30, bottom: 15),
-      child: AnimatedContainer(
-        onEnd: () {
-          setState(() {
-            animating = true;
-          });
-        },
-        height: tabHeight,
-        curve: Curves.easeIn,
-        duration: Duration(milliseconds: 205),
-        child: Column(
-          children: <Widget>[
-            _buildFeelingTab(),
-            isSelect?_buildFeelingSelectTab():Container(),
-          ],
-        ),
+      child: Column(
+        children: <Widget>[
+          _buildFeelingDefaultTab(),
+          AnimatedSwitcher(
+            duration: Duration(milliseconds: 200),
+            switchOutCurve: Curves.easeIn,
+            switchInCurve: Curves.easeOut,
+            transitionBuilder: (Widget child, Animation<double> animation) {
+              return SizeTransition(sizeFactor: animation, child: child,);
+            },
+            child: !isSelect ? Container() : _buildFeelingSelectTab(),)
+        ],
       ),
     );
   }
 
-  Widget _buildFeelingTab() {
+  Widget _buildFeelingDefaultTab() {
     return Padding(
       padding: EdgeInsets.only(top: 15),
       child: Row(
@@ -67,17 +64,15 @@ class _FeelingColumnState extends State<FeelingColumn> {
             ],
           ),
           InkWell(
-            onTap: () async {
-              if(animating){
-                animating = false;
-                await animateSync();
-              }
+            onTap: () {
+              animateSync();
             },
             child: Container(
               width: 30,
               height: 30,
               child: Center(
-                  child: isSelect ? Icon(Icons.keyboard_arrow_up) : Icon(Icons.keyboard_arrow_down),
+                child: isSelect ? Icon(Icons.keyboard_arrow_up) : Icon(
+                    Icons.keyboard_arrow_down),
               ),
             ),
           ),
@@ -91,10 +86,8 @@ class _FeelingColumnState extends State<FeelingColumn> {
       children: unselectedFeeling.map((feeling) {
         return InkWell(
           onTap: () async {
-            if(animating){
-              sp.setFeeling(feeling);
-              await animateSync();
-            }
+            sp.setFeeling(feeling);
+            animateSync();
           },
           child: Padding(
             padding: EdgeInsets.only(top: 15),
@@ -119,20 +112,12 @@ class _FeelingColumnState extends State<FeelingColumn> {
     );
   }
 
-  Future<void> animateSync() async {
+  void animateSync() {
     if(isSelect) {
       setState(() {
         isSelect = false;
       });
-      await Future.delayed(Duration(milliseconds: 120));
-      setState(() {
-        tabHeight = 50.0;
-      });
     } else {
-      setState(() {
-        tabHeight = 210.0;
-      });
-      await Future.delayed(Duration(milliseconds: 220));
       setState(() {
         unselectedFeeling = List.from(feeling);
         unselectedFeeling.remove(sp.getFeeling());
