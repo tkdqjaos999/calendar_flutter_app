@@ -89,7 +89,7 @@ class _HomePageState extends State<HomePage> {
                   child: Center(
                     child: Text(
                       'Calendar',
-                      style: GoogleFonts.montserrat(
+                      style: TextStyle(
                           color: Colors.black, fontSize: 20),
                     ),
                   ),

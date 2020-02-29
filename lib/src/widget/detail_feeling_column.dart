@@ -11,7 +11,6 @@ class FeelingColumn extends StatefulWidget {
 class _FeelingColumnState extends State<FeelingColumn> {
   SqlfliteProvider sp;
   bool isSelect = false;
-  bool animating = true;
   var tabHeight = 50.0;
   List<String> unselectedFeeling;
 

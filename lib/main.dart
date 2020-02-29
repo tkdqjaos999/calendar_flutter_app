@@ -10,7 +10,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -18,12 +20,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider<SqlfliteProvider>(
+          create: (_) => SqlfliteProvider(),
+        ),
         ChangeNotifierProvider<FirebaseProvider>(
           create: (_) => FirebaseProvider(),
         ),
-        ChangeNotifierProvider<SqlfliteProvider>(
-          create: (_) => SqlfliteProvider(),
-        )
       ],
       child: BlocProvider(
         create: (context) => BackUpBloc(DateRepository()),
