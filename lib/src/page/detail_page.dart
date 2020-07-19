@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+// ignore: must_be_immutable
 class DetailPage extends StatefulWidget {
   Date date;
 
@@ -15,7 +16,7 @@ class DetailPage extends StatefulWidget {
   _DetailPageState createState() => _DetailPageState();
 }
 
-class _DetailPageState extends State<DetailPage> with WidgetsBindingObserver{
+class _DetailPageState extends State<DetailPage> with WidgetsBindingObserver {
   SharedPreferences prefs;
   SqlfliteProvider sp;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -40,10 +41,10 @@ class _DetailPageState extends State<DetailPage> with WidgetsBindingObserver{
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) async {
-    if(state == AppLifecycleState.paused) {
-      prefs.setString('msg', _textEditingController.text??'');
-    } else if(state == AppLifecycleState.resumed) {
-      _textEditingController.text = prefs.getString('msg')??'';
+    if (state == AppLifecycleState.paused) {
+      prefs.setString('msg', _textEditingController.text ?? '');
+    } else if (state == AppLifecycleState.resumed) {
+      _textEditingController.text = prefs.getString('msg') ?? '';
     }
     super.didChangeAppLifecycleState(state);
   }
@@ -64,7 +65,7 @@ class _DetailPageState extends State<DetailPage> with WidgetsBindingObserver{
       key: _scaffoldKey,
       backgroundColor: Colors.white,
       body: GestureDetector(
-        onTap: (){
+        onTap: () {
           FocusScope.of(context).requestFocus(FocusNode());
         },
         child: ListView(
@@ -93,24 +94,36 @@ class _DetailPageState extends State<DetailPage> with WidgetsBindingObserver{
                         InkWell(
                           onTap: () async {
                             var result = await showDialog(
-                                context: context,
+                              context: context,
                               barrierDismissible: true,
                               child: AlertDialog(
                                 content: Text('저장하시겠습니까?'),
                                 actions: <Widget>[
-                                  FlatButton(onPressed: (){Navigator.pop(context);}, child: Text('취소')),
-                                  FlatButton(onPressed: (){Navigator.pop(context, '저장');}, child: Text('저장')),
+                                  FlatButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: Text('취소')),
+                                  FlatButton(
+                                      onPressed: () {
+                                        Navigator.pop(context, '저장');
+                                      },
+                                      child: Text('저장')),
                                 ],
                               ),
                             );
-                            if(result == '저장') {
+                            if (result == '저장') {
                               widget.date = Date(
-                                  month: widget.date.month,
-                                  day: widget.date.day,
-                                  feeling: sp.getFeeling(),
-                                  message: _textEditingController.text,);
+                                month: widget.date.month,
+                                day: widget.date.day,
+                                feeling: sp.getFeeling(),
+                                message: _textEditingController.text,
+                              );
                               sp.insertDate(widget.date);
-                              sp.setDate(getDaysFromYear(widget.date.month, widget.date.day), widget.date);
+                              sp.setDate(
+                                  getDaysFromYear(
+                                      widget.date.month, widget.date.day),
+                                  widget.date);
                               setState(() {
                                 isWriting = false;
                               });
@@ -167,7 +180,8 @@ class _DetailPageState extends State<DetailPage> with WidgetsBindingObserver{
                 color: Colors.grey,
               ),
             ),
-            Padding(padding: EdgeInsets.all(30),
+            Padding(
+              padding: EdgeInsets.all(30),
               child: _buildTextBox(_screenHeight - 310),
             )
           ],
@@ -177,48 +191,42 @@ class _DetailPageState extends State<DetailPage> with WidgetsBindingObserver{
   }
 
   Widget _buildTextBox(double height) {
-    if(!isWriting){
+    if (!isWriting) {
       return InkWell(
-        onTap: (){
+        onTap: () {
           setState(() {
             isWriting = true;
-            _textEditingController.text = widget.date.message??'';
+            _textEditingController.text = widget.date.message ?? '';
           });
         },
-        onLongPress: (){/*복사 삭제 기능 추가*/},
+        onLongPress: () {/*복사 삭제 기능 추가*/},
         child: Container(
           height: height,
-          child: ListView(
-              padding: EdgeInsets.all(15),
-              children: [
-                Text(widget.date.message??'',
-                  style: TextStyle(fontSize: 18),
-                ),
-              ]
-          ),
+          child: ListView(padding: EdgeInsets.all(15), children: [
+            Text(
+              widget.date.message ?? '',
+              style: TextStyle(fontSize: 18),
+            ),
+          ]),
         ),
       );
     } else {
       return Container(
         height: height,
-        child: ListView(
-            padding: EdgeInsets.all(15),
-            children: [
-              TextField(
-
-                scrollPhysics: NeverScrollableScrollPhysics(),
-                controller: _textEditingController,
-                maxLines: null,
-                autofocus: true,
-                textInputAction: TextInputAction.newline,
-                cursorColor: Colors.grey,
-                style: TextStyle(fontSize: 18),
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                ),
-              ),
-            ]
-        ),
+        child: ListView(padding: EdgeInsets.all(15), children: [
+          TextField(
+            scrollPhysics: NeverScrollableScrollPhysics(),
+            controller: _textEditingController,
+            maxLines: null,
+            autofocus: true,
+            textInputAction: TextInputAction.newline,
+            cursorColor: Colors.grey,
+            style: TextStyle(fontSize: 18),
+            decoration: InputDecoration(
+              border: InputBorder.none,
+            ),
+          ),
+        ]),
       );
     }
   }

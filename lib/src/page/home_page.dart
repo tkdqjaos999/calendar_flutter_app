@@ -12,7 +12,6 @@ import 'package:calendar_flutter_app/src/widget/home_dialog.dart';
 import 'package:calendar_flutter_app/src/widget/home_editing_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:path/path.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -89,8 +88,7 @@ class _HomePageState extends State<HomePage> {
                   child: Center(
                     child: Text(
                       'Calendar',
-                      style: TextStyle(
-                          color: Colors.black, fontSize: 20),
+                      style: TextStyle(color: Colors.black, fontSize: 20),
                     ),
                   ),
                 ),
@@ -219,27 +217,34 @@ class _HomePageState extends State<HomePage> {
     }
     return InkWell(
       onTap: () {
-        var date = sp.getDate(index)?? Date(month: month, day: day);
-        date.feeling == null ? sp.setFeeling('very good') : sp.setFeeling(date.feeling);
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    DetailPage(date: date)));
+        var date = sp.getDate(index) ?? Date(month: month, day: day);
+        date.feeling == null
+            ? sp.setFeeling('very good')
+            : sp.setFeeling(date.feeling);
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => DetailPage(date: date)));
       },
       onLongPress: () async {
-        if(sp.getDate(index)!=null) {
-          var result = await showDialog(context: context,
-            barrierDismissible: false,
-            child: AlertDialog(
-              content: Text('정말로 삭제 하시겠습니까?'),
-              actions: <Widget>[
-                FlatButton(onPressed: (){Navigator.pop(context, '삭제');}, child: Text('삭제')),
-                FlatButton(onPressed: (){Navigator.pop(context);}, child: Text('취소')),
-              ],
-            )
-          );
-          if(result == '삭제') {
+        if (sp.getDate(index) != null) {
+          var result = await showDialog(
+              context: context,
+              barrierDismissible: false,
+              child: AlertDialog(
+                content: Text('정말로 삭제 하시겠습니까?'),
+                actions: <Widget>[
+                  FlatButton(
+                      onPressed: () {
+                        Navigator.pop(context, '삭제');
+                      },
+                      child: Text('삭제')),
+                  FlatButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text('취소')),
+                ],
+              ));
+          if (result == '삭제') {
             sp.deleteDate(sp.getDate(index));
             sp.setDate(index, null);
           }
